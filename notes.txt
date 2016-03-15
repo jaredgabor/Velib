@@ -1,0 +1,79 @@
+TO DO
+- plot SVM prediction on top of boostrapped 2d histogram/median line
+XX - add time labels to x-axis of single-day plots
+- plot bootstraps from 1st half vs. 2nd half of data.
+
+- make demo of bootstrapping
+  - plot every Tuesday in a column
+  - extract column of data corresponding to a single time-of-day
+
+
+- some kind of demo of SVM regression?
+
+- plot showing locations and number of bikes on a map, evolving with time
+
+- actually do predictions!
+  - find nearest station
+
+
+
+Goal
+- At a given time on a given Day of week and Day of month (and ...), predict whether there will be enough bicycles available near a given location, and whether there will be enough bicycle slots remaining at a destination location
+
+Basic approach
+- Find stations near the desired starting location and ending location
+- For each such station, estimate (a) likely number of bikes available, (b) probability there will be enough bikes available, (c) length of time one would have to wait based on the turnover rate at that station at that time
+
+--- (a) Simply use time-of-week predictor.  For the given station, stack all weeks together, so that for every minute of the week we have a distribution of number of bikes available.  This will give both an average number of bikes available and the fraction of time at least N bikes are available.
+
+--- (c) Use the derivative of bikes in and bikes out (wrt. time) to determine whether new bikes will show up.  
+    
+
+
+Other aspects of analysis
+- Autocorrelation of time-series data for one bike station
+  - see on what timescales the patter repeats itself
+- Fourier transform of time-series data for one station
+  - see the characteristic timescales
+- ***testing to see how well the predictions work.
+- incorporate weather information into analysis
+- incorporate real-time information (current number of bikes available) if the requested time is in the near future
+- deal with broken bikes???  (ID bikes that are left even during periods of high demand
+- Find Holidays/outliers and exclude them???  Use nearest-neighbors to find days when the whole bike system was similar to today's, and use those days to predict outcomes...
+
+
+
+More advanced approaches
+- Incorporate time-of-year (e.g. season or month-of-year) information
+
+- Do a k-nearest neighbors search to find other stations with time series that are "similar".  Combine signal from these.
+  - Need to reduce dimensionality to find neighbors in reasonable amount of time?  
+    - Do a local regression (e.g. LOESS) to fit the time series, then compare the regressions somehow?
+    - fit to a spline or something?
+    - Do a principle components analysis on the time series to reduce dimensions?
+    - Do a Fourier analysis to filter signal, reducing dimensions?
+
+- Do a k-nearest neighbors search to find other Days/weeks/months that have similar patterns to a given day/week/month.  Stack all these to get the distribution of bikes avail.
+
+- effect of daylight as well as weather?
+
+
+Some references and stuff
+- LOESS / local regression
+- k-NN nearest neighbors 
+- Nate Silver's election forecasts and PECOTA player forecasting
+- ForPrin website -- forecasting principles
+- time series analysis -- moving average, kernel averaging, etc.
+- UCR time series archive
+
+
+
+
+--------------------
+To predict at a given time/day:
+   - Find all days that match the 1) Day of week, 2) Day of month, 3) month of year, 4) weather, 5) season, 6) Holiday flag, 7) ...???
+     - For each of those days, we have a list of nearest-neighbor-days.  The prediction comes from the average of all these nearest-neighbor days.
+
+
+---- What about times in the middle of the night?  Like 1am on a Monday.  For these, we probably really want to use the 24 hour period leading up to that time, rather than the typical Monday data.  
+
